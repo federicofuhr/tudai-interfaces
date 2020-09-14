@@ -7,8 +7,7 @@ function init() {
     let ctx = document.querySelector(".canvas").getContext("2d");
 
     let rect = canvas.getBoundingClientRect();
-    
-    
+
     let x = 0;
     let y = 0;
     let dibujando = false;
@@ -16,17 +15,16 @@ function init() {
     let grosor = 1;
 
     let botonSubirImagen = document.querySelector("#subir-imagen");
-    botonSubirImagen.addEventListener('click', function() {
+    botonSubirImagen.addEventListener('click', function () {
         inputImagen.click();
     })
-    
+
     let inputImagen = document.querySelector("#input-imagen");
     inputImagen.addEventListener('click', prueba);
 
     function prueba() {
         console.log('hola');
     }
-
 
     let botonLapiz = document.querySelector("#lapiz");
     botonLapiz.addEventListener('click', activarLapiz);
@@ -54,13 +52,13 @@ function init() {
         grosor = 1;
     }
 
-    canvas.addEventListener('mousedown', function(e) {
+    canvas.addEventListener('mousedown', function (e) {
         x = e.clientX - rect.left;
         y = e.clientY - rect.top;
         dibujando = true;
     });
 
-    canvas.addEventListener('mousemove', function(e) {
+    canvas.addEventListener('mousemove', function (e) {
         if (dibujando === true) {
             dibujar(x, y, e.clientX - rect.left, e.clientY - rect.top);
             x = e.clientX - rect.left;
@@ -68,7 +66,7 @@ function init() {
         }
     });
 
-    canvas.addEventListener('mouseup', function(e) {
+    canvas.addEventListener('mouseup', function (e) {
         if (dibujando === true) {
             dibujar(x, y, e.clientX - rect.left, e.clientY - rect.top);
             x = 0;
@@ -81,17 +79,11 @@ function init() {
         ctx.beginPath();
         ctx.strokeStyle = color;
         ctx.lineWidth = grosor;
-        ctx.moveTo(x1,y1);
-        ctx.lineTo(x2,y2);
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
         ctx.stroke();
         ctx.closePath();
     }
-    
-    
-    let imageData = ctx.createImageData(canvas.height, canvas.width);
-
-    
-    
 
     function setPixel(imageData, i, j, r, g, b, a) {
         let index = (i + j * imageData.width) * 4;
@@ -99,5 +91,32 @@ function init() {
         imageData.data[index + 1] = g;
         imageData.data[index + 2] = b;
         imageData.data[index + 3] = a;
+    }
+
+    inputImagen.onchange = e => {        
+        nuevoLienzo();
+        let file = e.target.files[0];
+        let reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = readerEvent => {
+            let content = readerEvent.target.result;
+            let image = new Image();
+            image.src = content;
+            image.onload = function () {
+                if (this.width > this.height) {
+                    imageAspectRatio = (1.0 * this.height) / this.width;
+                    imageScaledWidth = canvas.width;
+                    imageScaledHeight = canvas.width * imageAspectRatio;
+                } else {
+                    imageAspectRatio = (1.0 * this.width) / this.height;
+                    imageScaledWidth = canvas.height;
+                    imageScaledHeight = canvas.height * imageAspectRatio;
+                }
+                ctx.drawImage(this, 0, 0, imageScaledWidth, imageScaledHeight);
+                let imageData = ctx.getImageData(0, 0, imageScaledWidth, imageScaledHeight);
+                oldImage = imageData;
+                ctx.putImageData(imageData, 0, 0);
+            }
+        }
     }
 }

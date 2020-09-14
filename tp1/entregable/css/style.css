@@ -2,3 +2,7 @@
     margin: auto;
     border-style: solid;
 }
+
+.input-imagen {
+    display: none;
+}
