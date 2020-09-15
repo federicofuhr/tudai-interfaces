@@ -13,16 +13,29 @@ function init() {
     let dibujando = false;
     let color = 'black';
     let grosor = 1;
-
-    let r;
-    let g;
-    let b;
+    let umbralBinarizacion = 50;
+    let nivelBrillo = 10;
 
     let botonSubirImagen = document.querySelector("#subir-imagen");
     botonSubirImagen.addEventListener('click', function () {
         inputImagen.click();
-    })
+    });
 
+    let rangoGrosor = document.querySelector('#grosor');
+    rangoGrosor.addEventListener('change', modificarGrosor);
+
+    let botonFiltroBrillo = document.querySelector('#filtro-brillo');
+    botonFiltroBrillo.addEventListener('click', aplicarFiltroBrillo);
+
+    let botonFiltroNegativo = document.querySelector("#filtro-negativo");
+    botonFiltroNegativo.addEventListener('click', aplicarFiltroNegativo);
+
+    let botonFiltroBinarizacion = document.querySelector("#filtro-binarizacion");
+    botonFiltroBinarizacion.addEventListener('click', aplicarFiltroBinarizacion);
+
+    let botonFiltroSepia = document.querySelector("#filtro-sepia");
+    botonFiltroSepia.addEventListener('click', aplicarFiltroSepia);
+    
     let inputImagen = document.querySelector("#input-imagen");
     inputImagen.addEventListener('click', prueba);
 
@@ -61,19 +74,74 @@ function init() {
         }
     });
 
-    function getRed(imageData, x, y) {
-        let index = (x + y * imageData.width) * 4;
-        return imageData.data[index+0];
+    function modificarGrosor() {
+        grosor = rangoGrosor.value;
     }
 
-    function getGreen(imageData, x, y) {
+    function obtenerPixel(imageData, x, y, pos) {
         let index = (x + y * imageData.width) * 4;
-        return imageData.data[index+1];
+        return imageData.data[index + pos];
     }
 
-    function getBlue(imageData, x, y) {
-        let index = (x + y * imageData.width) * 4;
-        return imageData.data[index+2];
+    function aplicarFiltroBinarizacion() {
+        imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        for (let i = 0; i < canvas.width; i++){
+            for(let j = 0; j < canvas.height; j++){
+                let r = obtenerPixel(imageData, i, j, 0);
+                let g = obtenerPixel(imageData, i, j, 1);
+                let b = obtenerPixel(imageData, i, j, 2);
+                let promedio = Math.floor((r + g + b) / 3);
+                if (promedio > umbralBinarizacion) {
+                    setearPixel(imageData,i,j,255,255,255,255);
+                }else{
+                    setearPixel(imageData,i,j,0,0,0,255);
+                }
+            }
+        }
+        ctx.putImageData(imageData,0,0);
+    }
+
+    function aplicarFiltroBrillo () {
+        imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        for (let i = 0; i < imageData.width; i++){
+            for(let j = 0; j < imageData.height; j++){
+                let r = obtenerPixel(imageData, i, j, 0) + nivelBrillo
+                let g = obtenerPixel(imageData, i, j, 1) + nivelBrillo;
+                let b = obtenerPixel(imageData, i, j, 2) + nivelBrillo;
+                setearPixel(imageData, i, j, r, g, b, 255);
+            }
+        }
+        ctx.putImageData(imageData, 0, 0);
+    }
+
+    function aplicarFiltroSepia() {
+        let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);    
+        for (let i = 0; i < imageData.width; i++){
+            for(let j = 0; j < imageData.height; j++){   
+                let r = obtenerPixel(imageData, i, j, 0);
+                let g = obtenerPixel(imageData, i, j, 1);
+                let b = obtenerPixel(imageData, i, j, 2);       
+                let promedio = Math.floor((r + g + b) / 3);
+                r = Math.min(promedio + 40, 255);
+                g = Math.min(promedio + 15, 255);
+                b = Math.min(promedio, 255);
+                setearPixel(imageData, i, j, r, g, b, 255);
+            }
+        }
+        ctx.putImageData(imageData,0,0);
+    }
+
+    function aplicarFiltroNegativo() {
+        let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        for (let i = 0; i < canvas.width; i++) {
+            for (let j = 0; j < canvas.height; j++) {
+                let r = 255 - obtenerPixel(imageData, i, j, 0);
+                let g = 255 - obtenerPixel(imageData, i, j, 1);
+                let b = 255 - obtenerPixel(imageData, i, j, 2);
+                setearPixel(imageData, i, j, r, g, b);
+            }   
+        }
+        ctx.putImageData(imageData, 0, 0);
     }
 
     function prueba() {
@@ -89,16 +157,15 @@ function init() {
 
     function activarGoma() {
         color = 'white';
-        grosor = 20;
     }
 
     function activarLapiz() {
         color = 'black';
-        grosor = 1;
     }
 
     function dibujar(x1, y1, x2, y2) {
         ctx.beginPath();
+        modificarGrosor();
         ctx.strokeStyle = color;
         ctx.lineWidth = grosor;
         ctx.moveTo(x1, y1);
@@ -107,12 +174,11 @@ function init() {
         ctx.closePath();
     }
 
-    function setPixel(imageData, i, j, r, g, b, a) {
+    function setearPixel(imageData, i, j, r, g, b) {
         let index = (i + j * imageData.width) * 4;
         imageData.data[index + 0] = r;
         imageData.data[index + 1] = g;
         imageData.data[index + 2] = b;
-        imageData.data[index + 3] = a;
     }
 
     inputImagen.onchange = e => {
