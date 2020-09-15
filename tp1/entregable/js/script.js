@@ -14,6 +14,10 @@ function init() {
     let color = 'black';
     let grosor = 1;
 
+    let r;
+    let g;
+    let b;
+
     let botonSubirImagen = document.querySelector("#subir-imagen");
     botonSubirImagen.addEventListener('click', function () {
         inputImagen.click();
@@ -22,9 +26,8 @@ function init() {
     let inputImagen = document.querySelector("#input-imagen");
     inputImagen.addEventListener('click', prueba);
 
-    function prueba() {
-        console.log('hola');
-    }
+    let botonGuardar = document.querySelector('#boton-guardar');
+    botonGuardar.addEventListener('click', guardarImagen, false);
 
     let botonLapiz = document.querySelector("#lapiz");
     botonLapiz.addEventListener('click', activarLapiz);
@@ -34,23 +37,6 @@ function init() {
 
     let botonNuevoLienzo = document.querySelector("#nuevo-lienzo");
     botonNuevoLienzo.addEventListener('click', nuevoLienzo);
-
-    function nuevoLienzo() {
-        ctx.beginPath();
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = "rgba(255,255,255,1)";
-        ctx.closePath();
-    }
-
-    function activarGoma() {
-        color = 'white';
-        grosor = 20;
-    }
-
-    function activarLapiz() {
-        color = 'black';
-        grosor = 1;
-    }
 
     canvas.addEventListener('mousedown', function (e) {
         x = e.clientX - rect.left;
@@ -75,6 +61,42 @@ function init() {
         }
     });
 
+    function getRed(imageData, x, y) {
+        let index = (x + y * imageData.width) * 4;
+        return imageData.data[index+0];
+    }
+
+    function getGreen(imageData, x, y) {
+        let index = (x + y * imageData.width) * 4;
+        return imageData.data[index+1];
+    }
+
+    function getBlue(imageData, x, y) {
+        let index = (x + y * imageData.width) * 4;
+        return imageData.data[index+2];
+    }
+
+    function prueba() {
+        console.log('hola');
+    }
+
+    function nuevoLienzo() {
+        ctx.beginPath();
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "rgba(255,255,255,1)";
+        ctx.closePath();
+    }
+
+    function activarGoma() {
+        color = 'white';
+        grosor = 20;
+    }
+
+    function activarLapiz() {
+        color = 'black';
+        grosor = 1;
+    }
+
     function dibujar(x1, y1, x2, y2) {
         ctx.beginPath();
         ctx.strokeStyle = color;
@@ -93,7 +115,7 @@ function init() {
         imageData.data[index + 3] = a;
     }
 
-    inputImagen.onchange = e => {        
+    inputImagen.onchange = e => {
         nuevoLienzo();
         let file = e.target.files[0];
         let reader = new FileReader();
@@ -118,5 +140,11 @@ function init() {
                 ctx.putImageData(imageData, 0, 0);
             }
         }
+    }
+
+    function guardarImagen() {
+        let dato = canvas.toDataURL("image/jpeg");
+        dato = dato.replace("image/jpeg", "image/octet-stream");
+        document.location.href = dato;
     }
 }
