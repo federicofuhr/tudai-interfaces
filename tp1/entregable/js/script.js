@@ -15,6 +15,7 @@ function init() {
     let grosor = 1;
     let umbralBinarizacion = 50;
     let nivelBrillo = 10;
+    let nivelSaturacion = 2;
 
     let botonSubirImagen = document.querySelector("#subir-imagen");
     botonSubirImagen.addEventListener('click', function () {
@@ -90,16 +91,93 @@ function init() {
         let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
         for (let i = 0; i < imageData.width; i++) {
             for (let j = 0; j < imageData.height; j++) {
-                let r = obtenerPixel(imageData, i, j, 0);
-                let g = obtenerPixel(imageData, i, j, 1);
-                let b = obtenerPixel(imageData, i, j, 2);
-                let hsv = RGBtoHSV([r, g, b]);
-                hsv[1] *= 1.5;
+                let hsv = RGBtoHSV(imageData, i, j);
+                hsv[1] *= nivelSaturacion;
                 let rgb = HSVtoRGB(hsv);
                 setearPixel(imageData, i, j, rgb[0], rgb[1], rgb[2], 255);
             }
         }
         ctx.putImageData(imageData, 0, 0);
+    }
+
+    function RGBtoHSV(imageData, i , j) {
+        let r, g, b, h, s, v;
+        r = obtenerPixel(imageData, i, j, 0);
+        g = obtenerPixel(imageData, i, j, 1);
+        b = obtenerPixel(imageData, i, j, 2);
+        let min = Math.min(r, g, b);
+        let max = Math.max(r, g, b);
+        v = max;
+        let delta = max - min;
+        if (max != 0)
+            s = delta / max;
+        else {
+            s = 0;
+            h = -1;
+            return [h, s, undefined];
+        }
+        if (r === max)
+            h = (g - b) / delta;
+        else if (g === max)
+            h = 2 + (b - r) / delta;
+        else
+            h = 4 + (r - g) / delta;
+        h *= 60;
+        if (h < 0)
+            h += 360;
+        if (isNaN(h))
+            h = 0;
+        return [h, s, v];
+    };
+
+    function HSVtoRGB(color) {
+        let i, h, s, v, r, g, b;
+        h = color[0];
+        s = color[1];
+        v = color[2];
+        if (s === 0) {
+            r = g = b = v;
+            return [r, g, b];
+        }
+        h /= 60;
+        i = Math.floor(h);
+        let f = h - i;
+        let p = v * (1 - s);
+        let q = v * (1 - s * f);
+        let t = v * (1 - s * (1 - f));
+        switch (i) {
+            case 0:
+                r = v;
+                g = t;
+                b = p;
+                break;
+            case 1:
+                r = q;
+                g = v;
+                b = p;
+                break;
+            case 2:
+                r = p;
+                g = v;
+                b = t;
+                break;
+            case 3:
+                r = p;
+                g = q;
+                b = v;
+                break;
+            case 4:
+                r = t;
+                g = p;
+                b = v;
+                break;
+            default:
+                r = v;
+                g = p;
+                b = q;
+                break;
+        }
+        return [r, g, b];
     }
 
     function aplicarFiltroBinarizacion() {
