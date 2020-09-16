@@ -21,6 +21,9 @@ function init() {
         inputImagen.click();
     });
 
+    let botonSaturacion = document.querySelector('#filtro-saturacion');
+    botonSaturacion.addEventListener('click', aplicarFiltroSaturacion);
+
     let rangoGrosor = document.querySelector('#grosor');
     rangoGrosor.addEventListener('change', modificarGrosor);
 
@@ -35,7 +38,7 @@ function init() {
 
     let botonFiltroSepia = document.querySelector("#filtro-sepia");
     botonFiltroSepia.addEventListener('click', aplicarFiltroSepia);
-    
+
     let inputImagen = document.querySelector("#input-imagen");
     inputImagen.addEventListener('click', prueba);
 
@@ -83,28 +86,44 @@ function init() {
         return imageData.data[index + pos];
     }
 
+    function aplicarFiltroSaturacion() {
+        let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        for (let i = 0; i < imageData.width; i++) {
+            for (let j = 0; j < imageData.height; j++) {
+                let r = obtenerPixel(imageData, i, j, 0);
+                let g = obtenerPixel(imageData, i, j, 1);
+                let b = obtenerPixel(imageData, i, j, 2);
+                let hsv = RGBtoHSV([r, g, b]);
+                hsv[1] *= 1.5;
+                let rgb = HSVtoRGB(hsv);
+                setearPixel(imageData, i, j, rgb[0], rgb[1], rgb[2], 255);
+            }
+        }
+        ctx.putImageData(imageData, 0, 0);
+    }
+
     function aplicarFiltroBinarizacion() {
         imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        for (let i = 0; i < canvas.width; i++){
-            for(let j = 0; j < canvas.height; j++){
+        for (let i = 0; i < canvas.width; i++) {
+            for (let j = 0; j < canvas.height; j++) {
                 let r = obtenerPixel(imageData, i, j, 0);
                 let g = obtenerPixel(imageData, i, j, 1);
                 let b = obtenerPixel(imageData, i, j, 2);
                 let promedio = Math.floor((r + g + b) / 3);
                 if (promedio > umbralBinarizacion) {
-                    setearPixel(imageData,i,j,255,255,255,255);
-                }else{
-                    setearPixel(imageData,i,j,0,0,0,255);
+                    setearPixel(imageData, i, j, 255, 255, 255, 255);
+                } else {
+                    setearPixel(imageData, i, j, 0, 0, 0, 255);
                 }
             }
         }
-        ctx.putImageData(imageData,0,0);
+        ctx.putImageData(imageData, 0, 0);
     }
 
-    function aplicarFiltroBrillo () {
+    function aplicarFiltroBrillo() {
         imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        for (let i = 0; i < imageData.width; i++){
-            for(let j = 0; j < imageData.height; j++){
+        for (let i = 0; i < imageData.width; i++) {
+            for (let j = 0; j < imageData.height; j++) {
                 let r = obtenerPixel(imageData, i, j, 0) + nivelBrillo
                 let g = obtenerPixel(imageData, i, j, 1) + nivelBrillo;
                 let b = obtenerPixel(imageData, i, j, 2) + nivelBrillo;
@@ -115,12 +134,12 @@ function init() {
     }
 
     function aplicarFiltroSepia() {
-        let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);    
-        for (let i = 0; i < imageData.width; i++){
-            for(let j = 0; j < imageData.height; j++){   
+        let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        for (let i = 0; i < imageData.width; i++) {
+            for (let j = 0; j < imageData.height; j++) {
                 let r = obtenerPixel(imageData, i, j, 0);
                 let g = obtenerPixel(imageData, i, j, 1);
-                let b = obtenerPixel(imageData, i, j, 2);       
+                let b = obtenerPixel(imageData, i, j, 2);
                 let promedio = Math.floor((r + g + b) / 3);
                 r = Math.min(promedio + 40, 255);
                 g = Math.min(promedio + 15, 255);
@@ -128,7 +147,7 @@ function init() {
                 setearPixel(imageData, i, j, r, g, b, 255);
             }
         }
-        ctx.putImageData(imageData,0,0);
+        ctx.putImageData(imageData, 0, 0);
     }
 
     function aplicarFiltroNegativo() {
@@ -139,7 +158,7 @@ function init() {
                 let g = 255 - obtenerPixel(imageData, i, j, 1);
                 let b = 255 - obtenerPixel(imageData, i, j, 2);
                 setearPixel(imageData, i, j, r, g, b);
-            }   
+            }
         }
         ctx.putImageData(imageData, 0, 0);
     }
