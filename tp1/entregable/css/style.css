@@ -1,8 +1,13 @@
 .canvas {
     margin: auto;
-    border-style: solid;
+    border-style: groove;
+    background-color: white;
 }
 
 .input-imagen {
     display: none;
+}
+
+.fondo {
+    background-color:lavender
 }

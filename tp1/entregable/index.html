@@ -6,34 +6,64 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Entregable</title>
     <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+        integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+        integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
     <script src="./js/script.js"></script>
 </head>
 
 
+<body class="fondo">
+    <nav class="navbar navbar-light bg-light justify-content-center">
+        <h1>Paint<i class="ml-1 fas fa-palette"></i></h1>
+      </nav>
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-3">
+                <div>
+                    <h3>Archivo</h3>
+                    <button id="nuevo-lienzo" class="btn btn-light">Nuevo<i
+                            class="ml-1 far fa-sticky-note"></i></button>
+                    <button id="subir-imagen" class="btn btn-light">Subir<i
+                            class="ml-1 far fa-images"></i></button>
+                    <button id="boton-guardar" type="button" class="btn btn-light mt-1">Guardar<i class="ml-1 far fa-save"></i></button>
+                    <input id="input-imagen" class="input-imagen" type="file">
+                </div>
+                <div class="mt-3">
+                    <h3>Herramientas</h3>
+                    <button id="lapiz" class="btn btn-light bloques mr-1"><i class="fas fa-pencil-alt"></i><br>
+                        <button id="goma" class="btn btn-light bloques"><i class="fas fa-eraser"></i></button>
+                </div>
+                <div class="mt-3">
+                    <label for="Grosor">Grosor de la herramienta</label>
+                    <input type="range" class="form-control-range" id="grosor" min="1" max="20" value="3">
+                </div>
+            </div>
+            <div class="col-6">
+                <canvas class="canvas" width="500" height="400"></canvas>
+            </div>
+            <div class="col-3">
+                <div>
+                    <h3>Filtros</h3>
+                    <button id="filtro-negativo" class="btn btn-light">Negativo<i class="ml-1 fas fa-minus"></i></button><br>
+                    <button id="filtro-brillo" class="btn btn-light mt-1">Brillo<i class="ml-1 far fa-sun"></i></button><br>
+                    <button id="filtro-binarizacion" class="btn btn-light mt-1">Binarizacion<i class="ml-1 fas fa-adjust"></i></button><br>
+                    <button id="filtro-sepia" class="btn btn-light mt-1">Sepia<i class="ml-1 fas fa-filter"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+        integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+        integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+        crossorigin="anonymous"></script>
 </body>
-<div class="contenedor-principal">
-    <div>
-        <canvas class="canvas" width="600" height="400"></canvas>
-    </div>
-    <div>
-        <button id="nuevo-lienzo">Nuevo</button>
-    </div>
-    <div>
-        <button id="lapiz">Lapiz</button>
-        <button id="goma">Goma</button>
-        <input type="range" id="grosor" min="1" max="20" value="10">
-    </div>
-    <div>
-        <button id="subir-imagen">Subir imagen</button>
-        <button id="boton-guardar" type="button">Guardar imagen</button>
-        <input id="input-imagen" class="input-imagen" type="file">
-    </div>
-    <div>
-        <button id="filtro-negativo">Negativo</button>
-        <button id="filtro-brillo">Brillo</button>
-        <button id="filtro-binarizacion">Binarizacion</button>
-        <button id="filtro-sepia">Sepia</button>
-    </div>
-</div>
 
 </html>
